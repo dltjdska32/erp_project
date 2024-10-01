@@ -1,58 +1,34 @@
 package test.erp_project.domain.mail;
 
+import jakarta.persistence.*;
+import lombok.*;
+import test.erp_project.domain.user.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "mail_store")
 public class MailStore {
+    @Id
+    @Column(name = "mail_stoer_num")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mailStoreNum;
 
+    @Enumerated(EnumType.STRING)
     private MailType mailType;
 
-    private Long userNum;
 
-    private MailStore(Builder builder) {
-        this.mailStoreNum=builder.mailStoreNum;
-        this.mailType=builder.mailType;
-        this.userNum = builder.userNum;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_num")
+    private User user;
 
-    public static class Builder{
-        private Long mailStoreNum;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mail_store")
+    private List<Mail> mails = new ArrayList<>();
 
-        private MailType mailType;
-
-        private Long userNum;
-
-        public Builder mailStoreNum(Long mailStoreNum) {
-            this.mailStoreNum = mailStoreNum;
-            return this;
-        }
-
-        public Builder mailType(MailType mailType) {
-            this.mailType = mailType;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-        public MailStore build() {
-            return new MailStore(this);
-        }
-    }
-
-    public Long getMailStoreNum() {
-        return mailStoreNum;
-    }
-
-    public MailType getMailType() {
-        return mailType;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    public void changeMailType(MailType mailType) {
-        this.mailType = mailType;
-    }
 }

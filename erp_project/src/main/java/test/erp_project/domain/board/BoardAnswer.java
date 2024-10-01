@@ -1,96 +1,36 @@
 package test.erp_project.domain.board;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "board_answer")
 public class BoardAnswer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "answer_num")
     private Long answerNum;
 
-    private String contents;
+    private String content;
 
+    @Column(name = "created_date")
     private LocalDate createdDate;
 
-    private Long boardNum;
+    @ManyToOne
+    @JoinColumn(name = "board_num")
+    private Board board;
 
+    @Column(name = "user_num")
     private Long userNum;
 
-    private BoardAnswer(Builder builder) {
-        this.answerNum=builder.answerNum;
-        this.contents = builder.contents;
-        this.createdDate = builder.createdDate;
-        this.boardNum=builder.boardNum;
-        this.userNum = builder.userNum;
-    }
 
-    public static class Builder{
-        private Long answerNum;
-
-        private String contents;
-
-        private LocalDate createdDate;
-
-        private Long boardNum;
-
-        private Long userNum;
-
-        public Builder answerNum(Long answerNum) {
-            this.answerNum = answerNum;
-            return this;
-        }
-
-        public Builder contents(String contents) {
-            this.contents = contents;
-            return this;
-        }
-
-        public Builder createdDate(LocalDate createdDate) {
-            this.createdDate = createdDate;
-            return this;
-        }
-
-        public Builder boardNum(Long boardNum) {
-            this.boardNum = boardNum;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-        public BoardAnswer build() {
-            return new BoardAnswer(this);
-        }
-
-    }
-
-    public Long getAnswerNum() {
-        return answerNum;
-    }
-
-    public String getContents() {
-        return contents;
-    }
-
-    public LocalDate getCreatedDate() {
-        return createdDate;
-    }
-
-    public Long getBoardNum() {
-        return boardNum;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    @Override
-    public String toString() {
-        return "BoardAnswer{" +
-                "answerNum=" + answerNum +
-                ", contents='" + contents + '\'' +
-                ", createdDate=" + createdDate +
-                ", boardNum=" + boardNum +
-                ", userNum=" + userNum +
-                '}';
-    }
 }
