@@ -1,80 +1,34 @@
 package test.erp_project.domain.salary_log;
 
+import jakarta.persistence.*;
+import lombok.*;
+import test.erp_project.domain.user.User;
+
 import java.time.LocalDate;
 
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name= "salary_log")
 public class SalaryLog {
+
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "salary_num")
     private Long salaryNum;
 
+    @Column(name = "received_date")
     private LocalDate receivedDate;
 
+    @Column(name = "total_salary")
     private int totalSalary;
 
-    private Long userNum;
 
-    private SalaryLog(Builder builder) {
-        this.salaryNum = builder.salaryNum;
-        this.receivedDate = builder.receivedData;
-        this.totalSalary = builder.totalSalary;
-        this.userNum = builder.userNum;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_num")
+    private User user;
 
-    public static class Builder{
-        private Long salaryNum;
-
-        private LocalDate receivedData;
-
-        private int totalSalary;
-
-        private Long userNum;
-
-        public Builder salaryNum(Long salaryNum) {
-            this.salaryNum = salaryNum;
-            return this;
-        }
-
-        public Builder receivedData(LocalDate receivedData) {
-            this.receivedData = receivedData;
-            return this;
-        }
-
-        public Builder totalSalary(int totalSalary) {
-            this.totalSalary = totalSalary;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-        public SalaryLog build(){
-            return new SalaryLog(this);
-        }
-
-    }
-    public Long getSalaryNum() {
-        return salaryNum;
-    }
-
-    public LocalDate getReceivedData() {
-        return receivedDate;
-    }
-
-    public int getTotalSalary() {
-        return totalSalary;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    @Override
-    public String toString() {
-        return "SalaryLog{" +
-                "salaryNum=" + salaryNum +
-                ", receivedDate=" + receivedDate +
-                ", totalSalary=" + totalSalary +
-                ", userNum=" + userNum +
-                '}';
-    }
 }

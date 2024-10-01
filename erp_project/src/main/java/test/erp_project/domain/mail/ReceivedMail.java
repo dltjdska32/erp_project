@@ -1,54 +1,32 @@
 package test.erp_project.domain.mail;
 
+import jakarta.persistence.*;
+import lombok.*;
+import test.erp_project.domain.user.User;
+
+@Entity
+@Getter
+@Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "received_mail")
 public class ReceivedMail {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "received_num")
     private Long receivedNum;
 
-    private Long userNum;
 
-    private Long mailNum;
 
-    private ReceivedMail(Builder builder) {
-        this.receivedNum = builder.receivedNum;
-        this.userNum = builder.userNum;
-        this.mailNum = builder.mailNum;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_num")
+    private User user;
 
-    public static class Builder{
-        private Long receivedNum;
 
-        private Long userNum;
+    @ManyToOne
+    @JoinColumn(name = "mai_num")
+    private Mail mail;
 
-        private Long mailNum;
-
-        public Builder receivedNum(Long receivedNum) {
-            this.receivedNum = receivedNum;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-        public Builder mailNum(Long mailNum) {
-            this.mailNum = mailNum;
-            return this;
-        }
-
-        public ReceivedMail build() {
-            return new ReceivedMail(this);
-        }
-    }
-
-    public Long getReceivedNum() {
-        return receivedNum;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    public Long getMailNum() {
-        return mailNum;
-    }
 }
+
