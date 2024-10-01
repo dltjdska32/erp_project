@@ -1,83 +1,40 @@
 package test.erp_project.domain.board;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.*;
+import test.erp_project.domain.user.User;
 
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor //모든컬럼 생성자 생성
+@NoArgsConstructor
 public class Board {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_num")
     private Long boardNum;
 
+    @Column(nullable = false) // null값 허용x
     private String title;
 
     private String contents;
 
+    @Column(name = "created_date")
     private LocalDate createdDate;
 
-    private Long userNum;
+    @ManyToOne
+    @JoinColumn(name = "user_num")
+    private User user;
 
-    private Board(Builder builder) {
-        this.boardNum = builder.boardNum;
-        this.title = builder.title;
-        this.contents = builder.contents;
-        this.createdDate = builder.createdDate;
-        this.userNum = builder.userNum;
-    }
-
-    public static class Builder{
-        private Long boardNum;
-
-        private String title;
-
-        private String contents;
-
-        private LocalDate createdDate;
-
-        private Long userNum;
-
-        public Builder boardNum(Long boardNum) {
-            this.boardNum = boardNum;
-            return this;
-        }
-
-        public Builder title(String title) {
-            this.title = title;
-            return this;
-        }
-
-        public Builder contents(String contents) {
-            this.contents = contents;
-            return this;
-        }
-
-        public Builder createdDate(LocalDate createdDate) {
-            this.createdDate = createdDate;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-        public Board build() {
-            return new Board(this);
-        }
-    }
-    public Long getBoardNum() {
-        return boardNum;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContents() {
-        return contents;
-    }
-
-    public LocalDate getCreatedDate() {
-        return createdDate;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardAnswer> answers = new ArrayList<>();
 }

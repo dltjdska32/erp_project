@@ -1,114 +1,39 @@
 package test.erp_project.domain.work_log;
 
+import jakarta.persistence.*;
+import lombok.*;
+import test.erp_project.domain.user.User;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Entity
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class WorkLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "log_num")
     private Long logNum;
 
+    @Column(name = "start_time")
     private LocalTime startTime;
 
+    @Column(name = "end_time")
     private LocalTime endTime;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "work_date")
     private LocalDate workDate;
 
-    private Long userNum;
+    @ManyToOne
+    @JoinColumn(name = "user_num")
+    private User user;
 
-
-    private WorkLog(Builder builder) {
-        this.logNum = builder.logNum;
-        this.startTime=builder.startTime;
-        this.endTime = builder.endTime;
-        this.status = builder.status;
-        this.workDate=builder.workDate;
-        this.userNum=builder.userNum;
-    }
-
-    public static class Builder{
-        private Long logNum;
-
-        private LocalTime startTime;
-
-        private LocalTime endTime;
-
-        private Status status;
-
-        private LocalDate workDate;
-
-        private Long userNum;
-
-
-        public Builder logNum(Long logNum) {
-            this.logNum = logNum;
-            return this;
-        }
-
-        public Builder startTime(LocalTime startTime) {
-            this.startTime = startTime;
-            return this;
-        }
-
-        public Builder endTime(LocalTime endTime) {
-            this.endTime = endTime;
-            return this;
-        }
-
-        public Builder status(Status status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder workDate(LocalDate workDate) {
-            this.workDate = workDate;
-            return this;
-        }
-
-        public Builder userNum(Long userNum) {
-            this.userNum = userNum;
-            return this;
-        }
-
-
-        public WorkLog build(){
-            return new WorkLog(this);
-        }
-    }
-    public Long getLogNum() {
-        return logNum;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public LocalDate getWorkDate() {
-        return workDate;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-
-    @Override
-    public String toString() {
-        return "WorkLog{" +
-                "logNum=" + logNum +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", status=" + status +
-                ", workDate=" + workDate +
-                ", userNum=" + userNum +
-                '}';
-    }
 }
