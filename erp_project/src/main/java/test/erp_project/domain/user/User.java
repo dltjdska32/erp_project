@@ -11,6 +11,7 @@ import test.erp_project.domain.mail.ReceivedMail;
 import test.erp_project.domain.position.Position;
 import test.erp_project.domain.salary_log.SalaryLog;
 import test.erp_project.domain.work_log.WorkLog;
+import test.erp_project.dto.user_dto.UserJoinDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,9 +21,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +45,7 @@ public class User {
     private Role role;
 
     @Column(name = "remained_leave")
-    private int remainedLeave;
+    private int remainedLeave = 15; // 기본 연차 default값 15
 
     @ManyToOne
     @JoinColumn(name = "position_num")
@@ -76,5 +74,20 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List <WorkLog> workLogs = new ArrayList<>();
+
+
+    //=============================연관관계 메소드 설정============================//
+    protected User(){};
+
+    private User(String id, String password, String name, String tel, String email) {
+        this.userId = id;
+        this.password = password;
+        this.name = name;
+        this.tel = tel;
+        this.email = email;
+
+    }
+
+
 
 }

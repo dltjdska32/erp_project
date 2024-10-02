@@ -11,9 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
 public class Position {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +33,18 @@ public class Position {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "position")
     private List<User> users = new ArrayList<User>();
+
+
+    protected Position() {
+    }
+
+    public Position(Long positionNum, String positionName, int leaveDay, int basicSalary, int leavePay) {
+        this.positionNum = positionNum;
+        this.positionName = positionName;
+        this.leaveDay = leaveDay;
+        this.basicSalary = basicSalary;
+        this.leavePay = leavePay;
+    }
 
 
 }
