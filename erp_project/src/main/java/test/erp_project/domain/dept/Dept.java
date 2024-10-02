@@ -9,21 +9,28 @@ import java.util.List;
 
 
 @Entity
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Dept {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dept_num")
     private Long deptNum;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "dept_name")
     private String deptName;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dept")
     private List<User> user = new ArrayList<>();
+
+
+    protected Dept() {}
+
+    public Dept(Long deptNum, String deptName) {
+        this.deptNum = deptNum;
+        this.deptName = deptName;
+    }
+
+
 
 }
