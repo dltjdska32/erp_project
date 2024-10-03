@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import test.erp_project.domain.position.Position;
 
 @Repository
@@ -14,6 +15,7 @@ public class PositionRepository {
 
     private final EntityManager em;
 
+    @Transactional
     public void setPosition(Position p) {
         log.info("setPosition num = {}, name = {}, leaveday = {} basic_salary = {}, leave_pay {}",
                 p.getPositionNum(), p.getPositionName(), p.getLeaveDay(), p.getBasicSalary(), p.getLeavePay());
