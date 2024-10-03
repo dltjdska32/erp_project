@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "mail_store")
 public class MailStore {
     @Id
-    @Column(name = "mail_stoer_num")
+    @Column(name = "mail_store_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mailStoreNum;
 
@@ -28,7 +28,7 @@ public class MailStore {
     @JoinColumn(name = "user_num")
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mail_store")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mailStore")
     private List<Mail> mails = new ArrayList<>();
 
 }
