@@ -28,7 +28,7 @@ public class Mail {
     @Column(name = "created_date")
     private LocalDate createdDate;
 
-    private Long mailStoreNum;
+
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
