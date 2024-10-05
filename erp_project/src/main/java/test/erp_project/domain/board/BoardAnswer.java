@@ -25,7 +25,7 @@ public class BoardAnswer {
     @Column(name = "created_date")
     private LocalDate createdDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_num")
     private Board board;
 

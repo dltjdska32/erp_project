@@ -5,20 +5,16 @@ import org.hibernate.validator.constraints.Range;
 
 public class UserJoinDto {
 
-    @NotBlank(message = "아이디를 입력해주세요. ")
+
     private String userId;
 
-    @NotBlank(message = "패스워드를 입력해주세요.")
-    @Range(min = 8, max = 25, message = "8 ~ 25자리 사이의 패스워드를 입력해주세요.")
+
     private String password;
 
-    @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @NotBlank(message = "전화번호를 입력해주세요.")
     private String tel;
 
-    @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
 
     public String getUserId() {

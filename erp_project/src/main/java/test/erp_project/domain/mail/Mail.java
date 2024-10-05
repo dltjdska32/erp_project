@@ -34,11 +34,9 @@ public class Mail {
     private Boolean isDeleted;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mail_store_num")
     private MailStore mailStore;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mail")
-    private List<ReceivedMail> receivedMailList = new ArrayList<>();
 
 }

@@ -11,6 +11,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(indexes = {
+        @Index(name = "idx_dept_name", columnList = "dept_name")
+})
 public class Dept {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +22,6 @@ public class Dept {
 
     @Column(nullable = false, name = "dept_name")
     private String deptName;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dept")
-    private List<User> user = new ArrayList<>();
 
 
     protected Dept() {}
