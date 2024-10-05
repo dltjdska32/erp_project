@@ -32,7 +32,7 @@ public class WorkLog {
     @Column(name = "work_date")
     private LocalDate workDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;
 
