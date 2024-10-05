@@ -31,10 +31,9 @@ public class Board {
     @Column(name = "created_date")
     private LocalDate createdDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<BoardAnswer> answers = new ArrayList<>();
+
 }

@@ -24,11 +24,9 @@ public class MailStore {
     private MailType mailType;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mailStore")
-    private List<Mail> mails = new ArrayList<>();
 
 }

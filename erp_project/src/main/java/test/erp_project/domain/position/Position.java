@@ -11,7 +11,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-
+@Table(indexes = {
+        @Index(name = "idx_position_name", columnList = "position_name")
+})
 public class Position {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +33,6 @@ public class Position {
     private int leavePay;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "position")
-    private List<User> users = new ArrayList<User>();
 
 
     protected Position() {
