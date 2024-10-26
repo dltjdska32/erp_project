@@ -1,3 +1,4 @@
+/*
 package test.erp_project.config;
 
 import lombok.RequiredArgsConstructor;
@@ -224,3 +225,4 @@ public class DataLoader implements CommandLineRunner{
     }
 
 }
+*/

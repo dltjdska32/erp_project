@@ -7,6 +7,7 @@ import test.erp_project.domain.dept.Dept;
 import test.erp_project.domain.position.Position;
 import test.erp_project.domain.user.Role;
 import test.erp_project.domain.user.User;
+import test.erp_project.dto.user_dto.UserInfo;
 import test.erp_project.dto.user_dto.UserJoinDto;
 
 import test.erp_project.dto.user_dto.UserLoginDto;
@@ -50,6 +51,43 @@ public class UserService {
     }
 
 
+    //관리자 사원관리 유저 정보(부서, 직위) 수정
+    @Transactional
+    public void updateUser(UserInfo userInfo) {
+
+        Dept dept = deptService.getDept(userInfo.getDeptName());
+        Position position = positionService.getPosition(userInfo.getPositionName());
+
+        User user = userRepository.findByUserNum(userInfo.getUserNum()).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+        // 변경감지를 통해서 db 수정
+        //  필드하나 set할때마다. 쿼리가 1번 날아감
+        user.setDept(dept);
+        user.setPosition(position);
+    }
+
+
+    //유저의 이름으로 정보 가져오는 메서드
+    public List<UserInfo> getUserByName(String name) {
+
+        List<UserInfo> userInfoList = new ArrayList<>();
+
+        List<User> userByName = userRepository.findUserByName(name);
+        for (User user : userByName) {
+            UserInfo userInfo = UserInfo.builder()
+                    .userNum(user.getUserNum())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .deptName(user.getDept().getDeptName())
+                    .positionName(user.getPosition().getPositionName())
+                    .tel(user.getTel())
+                    .role(user.getRole())
+                    .build();
+            userInfoList.add(userInfo);
+        }
+
+        return userInfoList;
+    }
+
     //유저의 모든 정보를 가져오는 메서드
     public List<UserSearchDto> getAllUserInfo() {
         List<UserSearchDto> userSearchDtos = getUserSearchDtos();
@@ -58,58 +96,56 @@ public class UserService {
     }
 
 
-    // 유저 아이디 패스워드 확인 함수
-    public boolean checkUser(UserLoginDto userLoginDto) {
+    // 유저정보를 통해 userInfo로 변환
+    public UserInfo getUserInfo(UserLoginDto userLoginDto) {
 
-        boolean checkInfo = false;
+        Optional<User> user = userRepository.findById(userLoginDto.getUserId());
 
-        checkInfo = isCheckInfo(userLoginDto, checkInfo);
-
-        return checkInfo;
-    }
-
-
-    //유저 아이디 패스워드 확인 비즈니스로직
-    private boolean isCheckInfo(UserLoginDto userLoginDto, boolean checkInfo) {
-        // 받은 정보로 user 엔터티변환
-        User user = User.builder()
-                .userId(userLoginDto.getUserId())
-                .password(userLoginDto.getPassword())
-                .build();
-
-        Optional<User> userInfo = userRepository.findById(user.getUserId());
-
-        if (userInfo.isPresent()) {
-            String password = userInfo.get().getPassword();
-            if (password.equals(userLoginDto.getPassword())) {
-                checkInfo = true;
+        if (user.isPresent()) {
+            if (userLoginDto.getPassword().equals(user.get().getPassword())) {
+                return userToUserInfo(user);
             }
         }
-        return checkInfo;
+
+        return null;
     }
+
+    private UserInfo userToUserInfo(Optional<User> user) {
+        UserInfo userInfo = UserInfo.builder()
+                .userNum(user.get().getUserNum())
+                .name(user.get().getName())
+                .tel(user.get().getTel())
+                .deptName(user.get().getDept().getDeptName())
+                .email(user.get().getEmail())
+                .positionName(user.get().getPosition().getPositionName())
+                .role(user.get().getRole())
+                .build();
+        return userInfo;
+    }
+
 
     // 모든 유저 정보를 가져오는 비즈니스 로직.
     private List<UserSearchDto> getUserSearchDtos() {
 
-        List<User> userInfos = userRepository.findAllUser();
-        List<UserSearchDto> userSearchDtos = new ArrayList<>();
-
-        //user도메인 userSearchDto로 변환
-        for (User userInfo : userInfos) {
-            UserSearchDto userSearchDto = UserSearchDto.builder()
-                    .userId(userInfo.getUserId())
-                    .name(userInfo.getName())
-                    .email(userInfo.getEmail())
-                    .role(userInfo.getRole())
-                    .remainedLeave(userInfo.getRemainedLeave())
-                    .position(userInfo.getPosition())
-                    .dept(userInfo.getDept())
-                    .tel(userInfo.getTel())
-                    .userNum(userInfo.getUserNum())
-                    .build();
-            userSearchDtos.add(userSearchDto);
-        }
-        return userSearchDtos;
+        List<UserSearchDto> userInfos = userRepository.findAllUser();
+//        List<UserSearchDto> userSearchDtos = new ArrayList<>();
+//
+//        //user도메인 userSearchDto로 변환
+//        for (User userInfo : userInfos) {
+//            UserSearchDto userSearchDto = UserSearchDto.builder()
+//                    .userId(userInfo.getUserId())
+//                    .name(userInfo.getName())
+//                    .email(userInfo.getEmail())
+//                    .role(userInfo.getRole())
+//                    .remainedLeave(userInfo.getRemainedLeave())
+//                    .position(userInfo.getPosition())
+//                    .dept(userInfo.getDept())
+//                    .tel(userInfo.getTel())
+//                    .userNum(userInfo.getUserNum())
+//                    .build();
+//            userSearchDtos.add(userSearchDto);
+//        }
+        return userInfos;
     }
 
 
