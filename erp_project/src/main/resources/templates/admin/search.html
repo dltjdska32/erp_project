@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,12 +22,13 @@
         <tr th:each="user : ${userInfoList}">
             <td th:text="${user.userId}"></td>
             <td th:text="${user.name}"></td>
-            <td th:text="${user.tel}"></td>
+            <td th:text="${user.positionName}"></td>
+            <td th:text="${user.deptName}"></td>
 
         </tr>
         </tbody>
     </table>
-    <a href="/" class="btn btn-primary">Back to Home</a>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

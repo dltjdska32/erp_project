@@ -32,6 +32,8 @@ public class LeaveLog {
     @Column(name = "acceptance_status")
     private boolean acceptanceStatus;
 
+    private boolean checkStatus;
+
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;

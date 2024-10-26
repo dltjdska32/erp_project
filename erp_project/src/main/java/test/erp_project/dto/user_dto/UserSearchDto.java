@@ -12,6 +12,7 @@ import test.erp_project.domain.user.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSearchDto {
+/*
     private Long userNum;
 
     private String userId;
@@ -29,5 +30,10 @@ public class UserSearchDto {
     private Position position;
 
     private Dept dept;
+*/
 
+    private String userId;
+    private String name;
+    private String deptName;
+    private String positionName;
 }

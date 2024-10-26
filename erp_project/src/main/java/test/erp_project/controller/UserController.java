@@ -1,6 +1,5 @@
 package test.erp_project.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -12,19 +11,16 @@ import test.erp_project.dto.user_dto.UserJoinDto;
 import test.erp_project.dto.user_dto.UserSearchDto;
 import test.erp_project.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @Slf4j
-@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-
-    @GetMapping("/join")
+    @GetMapping("/user/join")
     public String join(Model model) {
         model.addAttribute("UserJoinDto", new UserJoinDto());
 
@@ -33,16 +29,16 @@ public class UserController {
         return "./user/join";
     }
 
-    @GetMapping("/search")
+    @GetMapping("/admin/search")
     public String search(Model model) {
         List<UserSearchDto> userInfoList = userService.getAllUserInfo();
 
         model.addAttribute("userInfoList", userInfoList);
         log.info("userInfoList {} ", userInfoList);
-        return "./user/search";
+        return "admin/search";
     }
 
-    @PostMapping("/join")
+    @PostMapping("/user/join")
     public String join(@Validated @ModelAttribute("UserJoinDto") UserJoinDto userJoinDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
 
