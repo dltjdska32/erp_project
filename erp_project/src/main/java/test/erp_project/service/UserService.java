@@ -58,13 +58,25 @@ public class UserService {
         Dept dept = deptService.getDept(userInfo.getDeptName());
         Position position = positionService.getPosition(userInfo.getPositionName());
 
-        User user = userRepository.findByUserNum(userInfo.getUserNum()).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+        User user = findUserByUserNum(userInfo.getUserNum());
+     
         // 변경감지를 통해서 db 수정
         //  필드하나 set할때마다. 쿼리가 1번 날아감
         user.setDept(dept);
         user.setPosition(position);
     }
 
+    //유저의 번호로 유저를 가져오는 함수.
+    public User findUserByUserNum(Long userNum) {
+        User user = userRepository.findByUserNum(userNum).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+        return user;
+    }
+
+    // 유저의 아이디로 유저를 가져오는함수
+    public User findUserByUserId(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+        return user;
+    }
 
     //유저의 이름으로 정보 가져오는 메서드
     public List<UserInfo> getUserByName(String name) {
@@ -88,13 +100,18 @@ public class UserService {
         return userInfoList;
     }
 
-    //유저의 모든 정보를 가져오는 메서드
+    //유저의 특정 정보를 가져오는 메서드
     public List<UserSearchDto> getAllUserInfo() {
         List<UserSearchDto> userSearchDtos = getUserSearchDtos();
 
         return userSearchDtos;
     }
 
+    //유저의 모든 정보를 가져오는 메서드
+    public List<User> getAllUser() {
+        List<User> users = userRepository.findAllUser();
+        return users;
+    }
 
     // 유저정보를 통해 userInfo로 변환
     public UserInfo getUserInfo(UserLoginDto userLoginDto) {
@@ -109,6 +126,17 @@ public class UserService {
 
         return null;
     }
+
+    // 유저 번호를 통해서 User 찾는 함수
+    public User getUserByUserNum(Long userNum){
+        Optional<User> user = userRepository.findByUserNum(userNum);
+        if(user.isPresent()) {
+            return user.get();
+        }
+
+        return null;
+    }
+
 
     private UserInfo userToUserInfo(Optional<User> user) {
         UserInfo userInfo = UserInfo.builder()
@@ -127,7 +155,7 @@ public class UserService {
     // 모든 유저 정보를 가져오는 비즈니스 로직.
     private List<UserSearchDto> getUserSearchDtos() {
 
-        List<UserSearchDto> userInfos = userRepository.findAllUser();
+        List<UserSearchDto> userInfos = userRepository.findAllUserSearchDto();
 //        List<UserSearchDto> userSearchDtos = new ArrayList<>();
 //
 //        //user도메인 userSearchDto로 변환

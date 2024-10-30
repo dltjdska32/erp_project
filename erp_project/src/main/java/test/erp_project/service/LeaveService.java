@@ -20,18 +20,18 @@ import java.util.Optional;
 public class LeaveService {
 
     private final LeaveRepository leaveRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // 휴가 신청.(사용자)
     @Transactional
     public void saveLeaveLog(ForRequestLeaveDto requestLeaveDto) {
         String userId = requestLeaveDto.getUserId();
-        Optional<User> user = userRepository.findById(userId);
+        User user = userService.findUserByUserId(userId);
 
-        if(user.isPresent()) {
+        if(user != null) {
 
             LeaveLog leaveLog = LeaveLog.builder()
-                    .user(user.get())
+                    .user(user)
                     .requestDate(requestLeaveDto.getRequestDate())
                     .endDate(requestLeaveDto.getEndDate())
                     .startDate(requestLeaveDto.getStartDate())
@@ -78,7 +78,7 @@ public class LeaveService {
 
 
 
-    //모든 휴가신청기록 찾기
+    //모든 휴가신청기록 찾기 (관리자)
     public List<LeaveLogOfAdminDto> getLeaveLogsOfAdmin() {
         List<LeaveLogOfAdminDto> leaveLogOfAdminList = leaveRepository.findLeaveLogOfAdminList();
         return leaveLogOfAdminList;
@@ -89,6 +89,16 @@ public class LeaveService {
     public List<LeaveLogOfAdminDto> getLeaveLogsOfAdminByName(String userName) {
         List<LeaveLogOfAdminDto> leaveLogOfAdminListByUserName = leaveRepository.findLeaveLogOfAdminListByUserName(userName);
         return leaveLogOfAdminListByUserName;
+    }
+
+
+    // 사용자의 휴가기록 - 세션에 있는 userNum을 통해서 user를 찾음.
+    public List<LeaveLogOfUserDto> getLeaveLogsOfUser(Long userNum) {
+
+        User user = userService.getUserByUserNum(userNum);
+        List<LeaveLogOfUserDto> leaveLogOfUser = leaveRepository.findLeaveLogOfUserList(user);
+
+        return leaveLogOfUser;
     }
 
 

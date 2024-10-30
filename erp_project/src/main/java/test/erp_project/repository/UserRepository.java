@@ -31,7 +31,7 @@ public class UserRepository {
 
     }
 
-        // 아이디 수정
+        // 부서 직위 수정
         public void update(UserInfo userInfo, Dept dept, Position position) {
 
             User user = em.find(User.class, userInfo.getUserNum());
@@ -62,7 +62,7 @@ public class UserRepository {
     }
 
     // 모든 직원 찾기
-    public List<UserSearchDto> findAllUser() {
+    public List<UserSearchDto> findAllUserSearchDto() {
         List<UserSearchDto> resultList = em.createQuery("select u.userId, u.name, d.deptName, p.positionName " +
                 "from User u inner join u.dept d inner join u.position p", UserSearchDto.class).getResultList();
         log.info("resultList: {}", resultList.toString());
@@ -74,6 +74,12 @@ public class UserRepository {
         return em.createQuery("select u from User u where u.name = : name", User.class)
                 .setParameter("name", name)
                 .getResultList();
+    }
+
+    //모든유저 찾기
+    public List<User> findAllUser() {
+        List<User> resultList = em.createQuery("select u from User u", User.class).getResultList();
+        return resultList;
     }
 
 
