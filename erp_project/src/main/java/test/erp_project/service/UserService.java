@@ -7,11 +7,8 @@ import test.erp_project.domain.dept.Dept;
 import test.erp_project.domain.position.Position;
 import test.erp_project.domain.user.Role;
 import test.erp_project.domain.user.User;
-import test.erp_project.dto.user_dto.UserInfo;
-import test.erp_project.dto.user_dto.UserJoinDto;
+import test.erp_project.dto.user_dto.*;
 
-import test.erp_project.dto.user_dto.UserLoginDto;
-import test.erp_project.dto.user_dto.UserSearchDto;
 import test.erp_project.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -100,6 +97,12 @@ public class UserService {
         return userInfoList;
     }
 
+
+    public List<User> getAllUser() {
+        List<User> users = userRepository.findAllUser();
+        return users;
+    }
+
     //유저의 특정 정보를 가져오는 메서드
     public List<UserSearchDto> getAllUserInfo() {
         List<UserSearchDto> userSearchDtos = getUserSearchDtos();
@@ -108,8 +111,8 @@ public class UserService {
     }
 
     //유저의 모든 정보를 가져오는 메서드
-    public List<User> getAllUser() {
-        List<User> users = userRepository.findAllUser();
+    public List<UserAndLeaveInfo> getAllUserAndLeaveInfo() {
+        List<UserAndLeaveInfo> users = userRepository.findUserAndLeaveInfo();
         return users;
     }
 
