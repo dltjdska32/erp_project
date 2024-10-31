@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import test.erp_project.domain.user.User;
 import test.erp_project.domain.work_log.WorkLog;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Repository
 public class WorkRepository {
@@ -25,5 +27,12 @@ public class WorkRepository {
                 .getSingleResult();
 
         return workLog;
+    }
+
+    public List<WorkLog> findAllWorkLog(User user) {
+        List<WorkLog> logs = em.createQuery("select w from WorkLog w where w.user = :user order by w.logNum desc", WorkLog.class)
+                .setParameter("user", user)
+                .getResultList();
+        return logs;
     }
 }

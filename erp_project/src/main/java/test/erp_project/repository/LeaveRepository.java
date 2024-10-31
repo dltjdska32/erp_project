@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import test.erp_project.domain.leave_log.LeaveLog;
 import test.erp_project.domain.user.User;
+import test.erp_project.dto.leave_dto.FindLeaveUserDto;
 import test.erp_project.dto.leave_dto.LeaveLogOfAdminDto;
 import test.erp_project.dto.leave_dto.LeaveLogOfUserDto;
 import test.erp_project.dto.user_dto.UserSearchDto;
@@ -58,6 +59,8 @@ public class LeaveRepository {
         LeaveLog leaveLog = em.find(LeaveLog.class, leaveNum);
         return Optional.ofNullable(leaveLog);
     }
+
+
 
 
 }

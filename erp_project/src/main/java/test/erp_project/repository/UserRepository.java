@@ -9,10 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import test.erp_project.domain.dept.Dept;
 import test.erp_project.domain.position.Position;
 import test.erp_project.domain.user.User;
-import test.erp_project.dto.user_dto.UserInfo;
-import test.erp_project.dto.user_dto.UserJoinDto;
-import test.erp_project.dto.user_dto.UserLoginDto;
-import test.erp_project.dto.user_dto.UserSearchDto;
+import test.erp_project.dto.user_dto.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +77,13 @@ public class UserRepository {
     public List<User> findAllUser() {
         List<User> resultList = em.createQuery("select u from User u", User.class).getResultList();
         return resultList;
+    }
+
+    //유저와 유저의 휴가기록 조회하는 메서드
+    public List<UserAndLeaveInfo> findUserAndLeaveInfo() {
+        List<UserAndLeaveInfo> infos = em.createQuery("select u, l.endDate, l.startDate, l.acceptanceStatus from " +
+                "LeaveLog l join fetch l.user u", UserAndLeaveInfo.class).getResultList();
+        return infos;
     }
 
 

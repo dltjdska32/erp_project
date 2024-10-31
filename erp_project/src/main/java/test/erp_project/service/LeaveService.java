@@ -11,6 +11,7 @@ import test.erp_project.dto.leave_dto.LeaveLogOfUserDto;
 import test.erp_project.repository.LeaveRepository;
 import test.erp_project.repository.UserRepository;
 
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,18 @@ public class LeaveService {
     public void saveLeaveLog(ForRequestLeaveDto requestLeaveDto) {
         String userId = requestLeaveDto.getUserId();
         User user = userService.findUserByUserId(userId);
+        int period = 0;
+
+        if (requestLeaveDto.getStartDate() != null && requestLeaveDto.getEndDate() != null) {
+             period = Period.between(requestLeaveDto.getStartDate(), requestLeaveDto.getEndDate()).getDays() + 1;
+        } else {
+            throw new IllegalArgumentException("시작 날짜와 끝나는 날짜가 모두 설정되어 있어야 합니다.");
+        }
+
+        if(period > user.getRemainedLeave()) {
+            throw new RuntimeException(user.getName() + "님의 신청일수가 남은 휴가일수를 초과했습니다.");
+        }
+
 
         if(user != null) {
 
