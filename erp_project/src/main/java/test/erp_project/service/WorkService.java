@@ -3,14 +3,19 @@ package test.erp_project.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import test.erp_project.domain.user.User;
 import test.erp_project.domain.work_log.Status;
 import test.erp_project.domain.work_log.WorkLog;
 import test.erp_project.dto.user_dto.UserAndLeaveInfo;
+import test.erp_project.dto.work_dto.AttendanceRespDto;
+import test.erp_project.dto.work_dto.CheckOutRespDto;
 import test.erp_project.dto.work_dto.UserWorkLog;
-import test.erp_project.repository.WorkRepository;
+import test.erp_project.repository.WorkLogRepository;
+import test.erp_project.repository.WorkLogRepositoryImpl;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -23,7 +28,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class WorkService {
 
-    private final WorkRepository workRepository;
+    private final WorkLogRepositoryImpl workLogRepositoryImpl;
+    private final WorkLogRepository workLogRepository;
     private final UserService userService;
     private final LeaveService leaveService;
 
@@ -58,7 +64,7 @@ public class WorkService {
                         .workDate(LocalDate.now())
                         .status(Status.LEAVE)
                         .build();
-                workRepository.save(worklog);
+                workLogRepositoryImpl.save(worklog);
                 continue;
             }
 
@@ -70,47 +76,89 @@ public class WorkService {
                     .workDate(LocalDate.now())
                     .status(Status.ABSENCE)
                     .build();
-            workRepository.save(workLog);
+            workLogRepositoryImpl.save(workLog);
         }
     }
 
     @Transactional
     // 출근 기록 (사용자 출근 클릭)
-    public void updateAttendance(Long userNum) {
+    public AttendanceRespDto updateAttendance(Long userNum) {
+        LocalDate date = LocalDate.now();
         LocalTime now = LocalTime.now();
         // 사용자를 찾는다.
         User user= userService.findUserByUserNum(userNum);
-        WorkLog workLog = workRepository.findWorkLog(user);
+        WorkLog workLog = workLogRepositoryImpl.findWorkLogByUserAndDate(user, date);
+
+
+        if(workLog == null) {
+            return AttendanceRespDto.builder()
+                    .message("근태 기록 찾을수 없음.")
+                    .success(false)
+                    .build();
+        }
 
         // 9시 이전일 경우 출석처리
         if(now.isBefore(LocalTime.of(9, 1))) {
 
             workLog.setStartTime(LocalTime.now());
             workLog.setStatus(Status.ATTENDANCE);
-            return;
+
+            AttendanceRespDto attendanceRespDto = AttendanceRespDto.builder()
+                    .message("출근 처리")
+                    .success(true)
+                    .status(Status.ATTENDANCE)
+                    .startTime(now)
+                    .workLogNum(workLog.getLogNum())
+                    .build();
+            return attendanceRespDto;
         }
 
         // 9시 이후 14시 이전일 경우 지각처리
         if(now.isAfter(LocalTime.of(9, 0)) && now.isBefore(LocalTime.of(14, 1))) {
 
             workLog.setStartTime(LocalTime.now());
-            workLog.setStatus(Status.ABSENCE);
+            workLog.setStatus(Status.TARDINESS);
 
+            AttendanceRespDto attendanceRespDto = AttendanceRespDto.builder()
+                    .message("지각 처리")
+                    .success(true)
+                    .status(Status.TARDINESS)
+                    .startTime(now)
+                    .workLogNum(workLog.getLogNum())
+                    .build();
+            return attendanceRespDto;
         }
 
-        // 나머지는 다 결근 유지
+        // 나머지는 다 결근 유지 출근시간은 기록함.
+        workLog.setStartTime(LocalTime.now());
+
+        return AttendanceRespDto.builder()
+                .success(true)
+                .message("결근 처리")
+                .startTime(now)
+                .status(Status.ABSENCE)
+                .workLogNum(workLog.getLogNum())
+                .build();
     }
 
 
     @Transactional
     // 퇴근 기록 (사용자 퇴근 클릭)
     // 6시 10분 이후에도 퇴근을 하지않는다면, 결근처리
-    // 5시 50분부터 6시 10분 사이에 퇴근을 클릭한다면 출석유지 후, 퇴근시간 설정.
-    public void updateGetOffWork(Long userNum) {
+    // 5시 50분부터 6시 10분 사이에 퇴근을 클릭한다면 지각,출석유지 후, 퇴근시간 설정.
+    public CheckOutRespDto updateGetOffWork(Long userNum) {
+        LocalDate today = LocalDate.now();
         User user = userService.findUserByUserNum(userNum);
-        WorkLog workLog = workRepository.findWorkLog(user);
+        WorkLog workLog = workLogRepositoryImpl.findWorkLogByUserAndDate(user, today);
         LocalTime now = LocalTime.now();
         Duration duration = Duration.between(workLog.getStartTime(), now);  //근무 시간
+
+        if(workLog == null) {
+            return CheckOutRespDto.builder()
+                    .message("근태 기록 찾을수 없음.")
+                    .success(false)
+                    .build();
+        }
 
         // 일한(퇴근- 출근) 시간이 4시간 이상일경우이고  2시부터 5시 49분 사이 퇴근을 하면 조퇴처리
         if(duration.toHours() >= 4 && now.isAfter(LocalTime.of(13, 59))
@@ -118,7 +166,14 @@ public class WorkService {
 
             workLog.setEndTime(LocalTime.now());
             workLog.setStatus(Status.LEAVEPREV);
-            return;
+
+            return  CheckOutRespDto.builder()
+                    .message("조퇴 처리")
+                    .success(true)
+                    .status(Status.LEAVEPREV)
+                    .endTime(now)
+                    .workLogNum(workLog.getLogNum())
+                    .build();
         }
 
         //현재 시간이 5시 50분 이후이고 6시 10분 이전이면 출근또는 지각처리 유지후 퇴근시간 설정
@@ -126,37 +181,26 @@ public class WorkService {
 
             workLog.setEndTime(LocalTime.now());
 
-        }
-
-        //나머지는 결근
-
-
-    }
-
-
-    //특정 회원의 모든 근태기록 조회
-    public List<UserWorkLog> userWorkLogs(Long userNum) {
-        User user = userService.findUserByUserNum(userNum);
-        List<WorkLog> userWorkLogs = workRepository.findAllWorkLog(user);
-
-        List<UserWorkLog> userWorkLogList = new ArrayList<>();
-
-        for(WorkLog workLog : userWorkLogs) {
-
-            UserWorkLog userWorkLog = UserWorkLog.builder()
+            return  CheckOutRespDto.builder()
+                    .message("퇴근 처리")
+                    .success(true)
+                    .endTime(now)
                     .workLogNum(workLog.getLogNum())
-                    .workDate(workLog.getWorkDate())
-                    .status(workLog.getStatus())
-                    .startTime(workLog.getStartTime())
-                    .endTime(workLog.getEndTime())
                     .build();
-
-            userWorkLogList.add(userWorkLog);
         }
 
-        return userWorkLogList;
+        workLog.setEndTime(LocalTime.now());
+        return  CheckOutRespDto.builder()
+                .message("결근 처리")
+                .success(true)
+                .endTime(now)
+                .workLogNum(workLog.getLogNum())
+                .build();
+
     }
 
 
-
+    public Page<UserWorkLog> findUserWorkLogByUser(Pageable pageable, User user) {
+        return workLogRepository.findUserWorkLogByUser(pageable, user);
+    }
 }

@@ -2,6 +2,7 @@ package test.erp_project.domain.board;
 
 import jakarta.persistence.*;
 import lombok.*;
+import test.erp_project.domain.user.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,8 +30,9 @@ public class BoardAnswer {
     @JoinColumn(name = "board_num")
     private Board board;
 
-    @Column(name = "user_num")
-    private Long userNum;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_num")
+    private User user;
 
 
 }

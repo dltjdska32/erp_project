@@ -1,27 +1,22 @@
 package test.erp_project.domain.mail;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import test.erp_project.domain.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
-@Setter
 @Getter
 @Builder
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-@Table(name = "mail_store")
-public class MailStore {
+@AllArgsConstructor
+public class SendMail {
     @Id
-    @Column(name = "mail_store_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mailStoreNum;
+    @Column(name = "sendNum")
+    private Long sendNum;
 
-    @Enumerated(EnumType.STRING)
-    private MailType mailType;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,4 +24,9 @@ public class MailStore {
     private User user;
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mai_num")
+    private Mail mail;
+
+    private boolean isDeleted = false;
 }

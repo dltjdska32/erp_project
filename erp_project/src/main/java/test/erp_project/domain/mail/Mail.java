@@ -34,9 +34,6 @@ public class Mail {
     private Boolean isDeleted;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mail_store_num")
-    private MailStore mailStore;
 
 
 }

@@ -13,6 +13,7 @@ public class DeptService {
 
     private final DeptRepository deptRepository;
 
+
     public Dept getDept(String deptName) {
         Dept dept = deptRepository.findDeptByDeptName(deptName);
         return dept;

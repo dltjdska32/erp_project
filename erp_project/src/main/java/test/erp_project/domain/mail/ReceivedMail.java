@@ -25,8 +25,10 @@ public class ReceivedMail {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mai_num")
+    @JoinColumn(name = "mail_num")
     private Mail mail;
+
+    private boolean isDeleted = false;
 
 }
 

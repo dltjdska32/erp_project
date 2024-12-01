@@ -43,7 +43,7 @@ public class LoginController {
 
         //직원 로그인한 기록이 있으면 유저페이지의 근태관리로 이동
         if(session != null && user != null && user.getRole() == Role.USER) {
-            return "redirect:/user/work-log";
+            return "redirect:/user/work";
         }
 
         //관리자 로그인한 기록이 있다면 사원관리 페이지로 이동
@@ -55,14 +55,14 @@ public class LoginController {
     }
 
     @GetMapping("/login-user")
-    public String loginUser(@ModelAttribute(name = "UserLoginDto") UserLoginDto userLoginDto) {
+    public String loginUser(@ModelAttribute(name = "userLoginDto") UserLoginDto userLoginDto) {
 
         log.info("User login controller");
         return "login-user";
     }
 
     @GetMapping("/login-admin")
-    public String adminLogin(@ModelAttribute(name = "UserLoginDto") UserLoginDto userLoginDto, HttpServletRequest request) {
+    public String adminLogin(@ModelAttribute(name = "userLoginDto") UserLoginDto userLoginDto, HttpServletRequest request) {
 
         UserInfo attribute = (UserInfo) request.getSession().getAttribute(SessionConst.LOGIN_USER);
 
@@ -74,21 +74,43 @@ public class LoginController {
 
 
     @PostMapping("/login-user")
-    public String loginUser(UserLoginDto userLoginDto, Model model) {
+    public String loginUser(@Valid @ModelAttribute("userLoginDto")UserLoginDto userLoginDto
+            , BindingResult bindingResult
+            , HttpServletRequest request
+            , @RequestParam(defaultValue = "/user/search", name = "redirectURL")String redirectURL) {
 
-        //admin으로 로그인을 실행했을경우 실행
-        if(userLoginDto.getUserId().equals("admin")){
 
-            // 검증로직추가필요.
-
-            return "redirect:/login-user";
+        if(bindingResult.hasErrors()){
+            return "login-user";
         }
 
-        return "redirect:/login-user";
+        userLoginDto.setRole(Role.USER);
+        UserInfo userInfo = userService.getUserInfo(userLoginDto);
+
+
+        if(userInfo == null || userInfo.getRole() != Role.USER){
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            return "login-user";
+        }
+
+
+        //로그인 성공시
+        //세션이 있으면 세션반환, 아니면 신규세션생성
+        HttpSession session = request.getSession();
+
+        // 세션에 회원정보 보관(메모리에 저장)
+        session.setAttribute(SessionConst.LOGIN_USER, userInfo);
+
+        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+        log.info("user login UserInfo = [{}][{}][{}][{}][{}]", user.getUserNum(),user.getName(),user.getTel(),user.getDeptName(),user.getPositionName(),user.getRole());
+
+
+        return "redirect:/work";
     }
 
     @PostMapping("/login-admin")
-    public String adminLogin(@Valid @ModelAttribute("userLoginDto")UserLoginDto userLoginDto, BindingResult bindingResult
+    public String adminLogin(@Valid @ModelAttribute("userLoginDto")UserLoginDto userLoginDto
+            , BindingResult bindingResult
             , HttpServletRequest request
             , @RequestParam(defaultValue = "/admin/search", name = "redirectURL")String redirectURL) {
 
@@ -100,7 +122,7 @@ public class LoginController {
         userLoginDto.setRole(Role.ADMIN);
         UserInfo userInfo = userService.getUserInfo(userLoginDto);
 
-        if(userInfo == null){
+        if(userInfo == null || userInfo.getRole() != Role.ADMIN){
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 일치하지 않습니다.");
             return "login-admin";
         }

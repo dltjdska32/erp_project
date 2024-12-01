@@ -1,6 +1,10 @@
 package test.erp_project.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForArraysOfLong;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import test.erp_project.domain.dept.Dept;
@@ -10,6 +14,7 @@ import test.erp_project.domain.user.User;
 import test.erp_project.dto.user_dto.*;
 
 import test.erp_project.repository.UserRepository;
+import test.erp_project.repository.UserRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +22,15 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final DeptService deptService;
     private final PositionService positionService;
+    private final UserRepositoryImpl userRepositoryImpl;
+    
 
     @Transactional
     // 유저만 사용할 것이기 때문에 Role 은 USER로 설정
@@ -48,25 +56,63 @@ public class UserService {
     }
 
 
-    //관리자 사원관리 유저 정보(부서, 직위) 수정
+    //관리자 사원관리 유저 정보(부서, 직위, 남은 휴가일수) 수정
     @Transactional
-    public void updateUser(UserInfo userInfo) {
+    public UserInfo updateUser(UserInfo userInfo, String originPosition) {
 
         Dept dept = deptService.getDept(userInfo.getDeptName());
+        Position originalPosition = positionService.getPosition(originPosition);
         Position position = positionService.getPosition(userInfo.getPositionName());
 
-        User user = findUserByUserNum(userInfo.getUserNum());
-     
+        User user = findUserByEmail(userInfo.getEmail());
+        
+
+
+
+
+        log.info("userNum : {} , deptName : {}, positionName : {}", user.getUserNum(), user.getDept().getDeptName(), user.getPosition().getPositionName());
         // 변경감지를 통해서 db 수정
         //  필드하나 set할때마다. 쿼리가 1번 날아감
         user.setDept(dept);
         user.setPosition(position);
+
+        //변경전 휴가일수를 가져옴.
+        int leaveDay = originalPosition.getLeaveDay();
+
+        //사용자의 남은 휴가일수를 가져옴
+        int remainedLeave = user.getRemainedLeave();
+
+        //직원이 사용한 휴가일수를 계산
+        int usedLeaveDay = leaveDay - remainedLeave;
+
+        // 사용한 휴가일수가 0일경우 변경된 직위에 휴가로 유저남은 휴가 업데이트
+        // 사용한 휴가일수가 있다면 변경된 직위의 휴가일수에서 사용한 휴가일수를 빼서 변경
+        if(usedLeaveDay == 0){
+            user.setRemainedLeave(position.getLeaveDay());
+        } else {
+            user.setRemainedLeave(position.getLeaveDay() - usedLeaveDay);
+        }
+
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .deptName(user.getDept().getDeptName())
+                .positionName(user.getPosition().getPositionName())
+                .build();
+
+        return updatedUserInfo;
     }
 
     //유저의 번호로 유저를 가져오는 함수.
     public User findUserByUserNum(Long userNum) {
         User user = userRepository.findByUserNum(userNum).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
         return user;
+    }
+
+    //유저의 이메일로 유저를 가져오는 함수
+    public User findUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음."));
+        return user;
+
     }
 
     // 유저의 아이디로 유저를 가져오는함수
@@ -130,6 +176,15 @@ public class UserService {
         return null;
     }
 
+
+    public Page<UserInfo> getAllUserInfo(Pageable pageable) {
+        return userRepositoryImpl.findAllUserSearchDto(pageable);
+    }
+
+    public Page<UserInfo> getUsersInfoByName(Pageable pageable, String userName) {
+        return userRepositoryImpl.findUsersByName(userName, pageable);
+    }
+
     // 유저 번호를 통해서 User 찾는 함수
     public User getUserByUserNum(Long userNum){
         Optional<User> user = userRepository.findByUserNum(userNum);
@@ -139,6 +194,26 @@ public class UserService {
 
         return null;
     }
+
+
+    // 유저가 존재하면 true , 존재하지 않으면 false 반환.
+    public boolean isUserIdDuplicate(String userId) {
+
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    //휴가 승인시 remainedLeave를 수정
+    @Transactional
+    public void updateRemainedLeave(String userId, int remainedLeave) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원을 찾을수 없음."));
+        user.setRemainedLeave(remainedLeave);
+    }
+
 
 
     private UserInfo userToUserInfo(Optional<User> user) {

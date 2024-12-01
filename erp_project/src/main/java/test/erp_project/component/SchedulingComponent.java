@@ -2,6 +2,7 @@ package test.erp_project.component;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import test.erp_project.service.SalaryService;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class SchedulingComponent {
 
     private final SalaryService salaryService;
@@ -21,20 +23,21 @@ public class SchedulingComponent {
     // 매월 10일 9시에 호출 월급 지급
     @Scheduled(cron = "0 0 9 10 * ?")
     public void saveSalarylog() {
-
-        salaryService.saveSalary();
+        LocalDate today = LocalDate.now();
+        salaryService.saveSalary(today);
+        log.info("월급지급");
     }
 
     // 매일 6시에 호출
-    @Scheduled(cron = "0 0 6 * * ?")
+    @Scheduled(cron = "15 22 14 * * MON-FRI")
     public void saveWorklog() {
-        LocalDate  now = LocalDate.now();
-        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        /*LocalDate  now = LocalDate.now();*/
+       /* DayOfWeek dayOfWeek = now.getDayOfWeek();*/
 
-        ///주말일 경우 실행 x
+/*        ///주말일 경우 실행 x
         if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
             return;
-        }
+        }*/
 
         workService.saveWork();
     }
