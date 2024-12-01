@@ -18,4 +18,6 @@ public class PositionService {
         Position position = positionRepository.findPositionByPositionName(positionName);
         return position;
     }
+
+
 }

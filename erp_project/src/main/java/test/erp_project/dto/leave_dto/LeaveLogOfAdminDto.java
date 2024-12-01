@@ -1,11 +1,14 @@
 package test.erp_project.dto.leave_dto;
 
+import lombok.AllArgsConstructor;
+
 import java.time.LocalDate;
 
 /**
 *
 *  휴가 정보를 Admin 에게 보내기위한 dto -> 수정 필요.
 * */
+@AllArgsConstructor
 public class LeaveLogOfAdminDto
 {
 

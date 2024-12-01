@@ -45,6 +45,19 @@ public class UserRepository {
             return Optional.ofNullable(user);
         }
 
+    public Optional<User> findByEmail(String email) {
+        try {
+            User user = em.createQuery(
+                            "select u from User u where u.email = :email", User.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+            return Optional.of(user);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+
+    }
+
     // 아이디 찾기
     public Optional<User> findById(String id) {
         try {
@@ -81,10 +94,12 @@ public class UserRepository {
 
     //유저와 유저의 휴가기록 조회하는 메서드
     public List<UserAndLeaveInfo> findUserAndLeaveInfo() {
-        List<UserAndLeaveInfo> infos = em.createQuery("select u, l.endDate, l.startDate, l.acceptanceStatus from " +
-                "LeaveLog l join fetch l.user u", UserAndLeaveInfo.class).getResultList();
+        //coalesce -> 첫번째인자가 null이면 두번째인자가 기본값
+        List<UserAndLeaveInfo> infos = em.createQuery("select new test.erp_project.dto.user_dto.UserAndLeaveInfo(u, l.endDate, l.startDate, coalesce(l.acceptanceStatus, false)) from " +
+                "User u left join  LeaveLog l on u = l.user ", UserAndLeaveInfo.class).getResultList();
         return infos;
     }
+
 
 
 }

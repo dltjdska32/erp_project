@@ -6,7 +6,7 @@ import lombok.*;
 import test.erp_project.domain.board.Board;
 import test.erp_project.domain.dept.Dept;
 import test.erp_project.domain.leave_log.LeaveLog;
-import test.erp_project.domain.mail.MailStore;
+
 import test.erp_project.domain.mail.ReceivedMail;
 import test.erp_project.domain.position.Position;
 import test.erp_project.domain.salary_log.SalaryLog;
@@ -58,7 +58,6 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_num")
     private Dept dept;
-
 
 
 }

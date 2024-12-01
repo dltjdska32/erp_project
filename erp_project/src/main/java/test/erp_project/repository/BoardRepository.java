@@ -1,32 +1,43 @@
 package test.erp_project.repository;
 
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import test.erp_project.domain.board.Board;
+import test.erp_project.dto.board_dto.BoardInfoDto;
 
-import java.util.List;
+public interface BoardRepository extends JpaRepository<Board, Long> {
+    @Query("select new test.erp_project.dto.board_dto.BoardInfoDto(b.boardNum, d.deptName, p.positionName, u.name, b.title, b.createdDate)" +
+            "from Board b " +
+            "inner join b.user u " +
+            "inner join u.dept d " +
+            "inner join u.position p order by b.boardNum desc")
+    Page<BoardInfoDto> findAllBoardInfoDto(Pageable pageable);
 
-@Repository
-@RequiredArgsConstructor
-public class BoardRepository {
+    @Query("select new test.erp_project.dto.board_dto.BoardInfoDto(b.boardNum, d.deptName, p.positionName, u.name, b.title, b.createdDate)" +
+            "from Board b " +
+            "inner join b.user u " +
+            "inner join u.dept d " +
+            "inner join u.position p where b.title like %:titleOrName% or u.name like %:titleOrName% order by b.boardNum desc")
+    Page<BoardInfoDto> findBoardInfoDtoByTitle(Pageable pageable, @Param("titleOrName") String titleOrName);
 
-    private final EntityManager em;
+    @Query("select new test.erp_project.dto.board_dto.BoardInfoDto(b.boardNum, d.deptName, p.positionName, u.name, b.title, b.createdDate)" +
+            "from Board b " +
+            "inner join b.user u " +
+            "inner join u.dept d " +
+            "inner join u.position p where u.userNum = :userNum order by b.boardNum desc")
+    Page<BoardInfoDto> findAllBoardInfoDtoByUserNum(Pageable pageable,@Param("userNum") Long userNum);
 
-    // 게시글 저장
-    public void save(Board board) {
-        em.persist(board);
-    }
-
-
-    // 모든 게시글 조회
-    public List<Board> findAllBoard() {
-
-        List<Board> boards = em.createQuery("select b from Board b" , Board.class).getResultList();
-        return boards;
-    }
-
-    // 제목으로 게시글 조회
-   
+    @Query("select new test.erp_project.dto.board_dto.BoardInfoDto(b.boardNum, d.deptName, p.positionName, u.name, b.title, b.createdDate)" +
+            "from Board b " +
+            "inner join b.user u " +
+            "inner join u.dept d " +
+            "inner join u.position p " +
+            "where u.userNum = :userNum " +
+            "and b.title like %:titleOrName% " +
+            "or u.name like %:titleOrName% order by b.boardNum desc")
+    Page<BoardInfoDto> findBoardInfoDtoByTitleAndUserNum(Pageable pageable, @Param("titleOrName") String titleOrName, @Param("userNum") Long userNum);
 
 }
