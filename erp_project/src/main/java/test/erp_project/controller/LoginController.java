@@ -99,6 +99,9 @@ public class LoginController {
         HttpSession session = request.getSession();
 
         // 세션에 회원정보 보관(메모리에 저장)
+        // was에서 여러사람마다 jsessionid를 생성시킴
+        // 모든 사용자는 다른 메모리에 session의 키 벨류가 저장됨
+        // jssessionid를 통해서 메모리를 찾고 키값으로 밸류를 찾음.
         session.setAttribute(SessionConst.LOGIN_USER, userInfo);
 
         UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);

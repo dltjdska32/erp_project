@@ -29,7 +29,7 @@ public class SchedulingComponent {
     }
 
     // 매일 6시에 호출
-    @Scheduled(cron = "15 22 14 * * MON-FRI")
+    @Scheduled(cron = "00 00 06 * * MON-FRI")
     public void saveWorklog() {
         /*LocalDate  now = LocalDate.now();*/
        /* DayOfWeek dayOfWeek = now.getDayOfWeek();*/
