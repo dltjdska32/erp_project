@@ -59,5 +59,7 @@ public class User {
     @JoinColumn(name = "dept_num")
     private Dept dept;
 
+    private String idPhotoUploadName;
 
+    private String idPhotoStoredName;
 }

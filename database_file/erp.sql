@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS `board_answer`;
 DROP TABLE IF EXISTS `dept`;
 DROP TABLE IF EXISTS `leave_log`;
 DROP TABLE IF EXISTS `mail`;
-DROP TABLE IF EXISTS `mail_store`;
+DROP TABLE IF EXISTS `send_mail`;
 DROP TABLE IF EXISTS `position`;
 DROP TABLE IF EXISTS `received_mail`;
 DROP TABLE IF EXISTS `salary_log`;
@@ -102,22 +102,7 @@ CREATE TABLE IF NOT EXISTS `erp`.`leave_log` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `erp`.`mail_store`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `erp`.`mail_store` (
-  `mail_store_num` BIGINT NOT NULL AUTO_INCREMENT,
-  `mail_type` ENUM('RECEIVED', 'SEND') NOT NULL,
-  `user_num` BIGINT NOT NULL,
-  PRIMARY KEY (`mail_store_num`),
-  UNIQUE INDEX `mail_store_num_UNIQUE` (`mail_store_num` ASC),
-  INDEX `fk_mail_store_user1_idx` (`user_num` ASC),
-  CONSTRAINT `fk_mail_store_user1`
-    FOREIGN KEY (`user_num`)
-    REFERENCES `erp`.`user` (`user_num`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `erp`.`work_log`
@@ -142,22 +127,43 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `erp`.`mail`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS erp.mail (
-  mai_num BIGINT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(200) NOT NULL,
-  contents VARCHAR(5000) NULL,
-  created_date DATE NOT NULL,
-  mail_store_num BIGINT NOT NULL,
-  is_deleted TINYINT(1) NOT NULL DEFAULT 0,  -- boolean 필드 추가, 기본값은 0 (false)
-  PRIMARY KEY (mai_num),
-  UNIQUE INDEX mai_num_UNIQUE (mai_num ASC),
-  INDEX fk_mail_mail_store1_idx (mail_store_num ASC),
-  CONSTRAINT fk_mail_mail_store1
-    FOREIGN KEY (mail_store_num)
-    REFERENCES erp.mail_store (mail_store_num)
+CREATE TABLE IF NOT EXISTS `erp`.`mail` (
+  `mai_num` BIGINT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(200) NOT NULL,
+  `contents` VARCHAR(5000) NULL,
+  `created_date` DATE NOT NULL,
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`mai_num`),
+  UNIQUE INDEX `mai_num_UNIQUE` (`mai_num` ASC))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `erp`.`send_mail`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `erp`.`send_mail` (
+  `send_num` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_num` BIGINT NOT NULL,
+  `mai_num` BIGINT NOT NULL,
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`send_num`),
+  UNIQUE INDEX `send_num_UNIQUE` (`send_num` ASC),
+  INDEX `fk_send_mail_user_idx` (`user_num` ASC),
+  INDEX `fk_send_mail_mail_idx` (`mai_num` ASC),
+  CONSTRAINT `fk_send_mail_user`
+    FOREIGN KEY (`user_num`)
+    REFERENCES `erp`.`user` (`user_num`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_send_mail_mail`
+    FOREIGN KEY (`mai_num`)
+    REFERENCES `erp`.`mail` (`mai_num`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+
+
+
 -- -----------------------------------------------------
 -- Table `erp`.`received_mail`
 -- -----------------------------------------------------
@@ -165,22 +171,23 @@ CREATE TABLE IF NOT EXISTS `erp`.`received_mail` (
   `received_num` BIGINT NOT NULL AUTO_INCREMENT,
   `user_num` BIGINT NOT NULL,
   `mail_num` BIGINT NOT NULL,
-  is_deleted TINYINT(1) NOT NULL DEFAULT 0,
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`received_num`),
   UNIQUE INDEX `received_num_UNIQUE` (`received_num` ASC),
-  INDEX `fk_received_mail_user1_idx` (`user_num` ASC),
-  INDEX `fk_received_mail_mail1_idx` (`mail_num` ASC),
-  CONSTRAINT `fk_received_mail_user1`
+  INDEX `fk_received_mail_user_idx` (`user_num` ASC),
+  INDEX `fk_received_mail_mail_idx` (`mail_num` ASC),
+  CONSTRAINT `fk_received_mail_user`
     FOREIGN KEY (`user_num`)
     REFERENCES `erp`.`user` (`user_num`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_received_mail_mail1`
+  CONSTRAINT `fk_received_mail_mail`
     FOREIGN KEY (`mail_num`)
     REFERENCES `erp`.`mail` (`mai_num`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `erp`.`board`
@@ -297,49 +304,6 @@ VALUES
 ('normaluser20', 'normaluserpassword20', '박상혁', '010-3333-4444', 'normaluser20@knu.com', 'USER', 15, 1, 1);
 
 
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 1);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 1);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 2);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 2);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 3);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 3);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 4);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 4);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 5);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 5);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 6);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 6);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 7);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 7);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 8);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 8);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 9);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 9);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 10);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 10);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 11);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 11);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 12);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 12);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 13);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 13);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 14);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 14);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 15);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 15);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 16);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 16);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 17);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 17);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 18);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 18);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 19);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 19);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 20);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 20);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('SEND', 21);
-INSERT INTO mail_store (mail_type, user_num) VALUES ('RECEIVED', 21);
-
 -- User 1의 salary_log 삽입
 INSERT INTO salary_log (received_date, total_salary, user_num) VALUES ('2024-03-10', 6000000, 1);
 INSERT INTO salary_log (received_date, total_salary, user_num) VALUES ('2024-04-10', 6000000, 1);
@@ -442,44 +406,10 @@ ALTER TABLE `erp`.`salary_log`
 ADD COLUMN `total_bonus` INT NOT NULL DEFAULT 0 AFTER `total_salary`;
 
 select * from mail;
-select * from mail_store;
+
 select * from received_mail;
-
-
--- -----------------------------------------------------
--- Table `erp`.`send_mail`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `erp`.`send_mail` (
-  `send_num` BIGINT NOT NULL AUTO_INCREMENT, -- Primary Key
-  `user_num` BIGINT NOT NULL,               -- Foreign Key referencing `user` table
-  `mai_num` BIGINT NOT NULL,                -- Foreign Key referencing `mail` table
-  PRIMARY KEY (`send_num`),
-  UNIQUE INDEX `send_num_UNIQUE` (`send_num` ASC), -- Ensure unique primary key
-  INDEX `fk_send_mail_user_idx` (`user_num` ASC),  -- Index for Foreign Key to `user`
-  INDEX `fk_send_mail_mail_idx` (`mai_num` ASC),   -- Index for Foreign Key to `mail`
-  CONSTRAINT `fk_send_mail_user`
-    FOREIGN KEY (`user_num`)
-    REFERENCES `erp`.`user` (`user_num`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_send_mail_mail`
-    FOREIGN KEY (`mai_num`)
-    REFERENCES `erp`.`mail` (`mai_num`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-)
-ENGINE = InnoDB;
 
 
 
 describe send_mail;
 
-select * from send_mail;
-select * from received_mail;
-select * from mail;
-select * from mail_store;
-delete from mail_store;
-delete from send_mail;
-SET SQL_SAFE_UPDATES = 0;
-describe mail;
-describe send_mail;
