@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import test.erp_project.config.SessionConst;
+import test.erp_project.domain.user.User;
 import test.erp_project.dto.salary_dto.AddBonusDto;
 import test.erp_project.dto.salary_dto.AdminSalaryData;
 import test.erp_project.dto.salary_dto.UserAndBasicSalaryDto;
 import test.erp_project.dto.salary_dto.UserSalaryDto;
 import test.erp_project.dto.user_dto.UserInfo;
 import test.erp_project.service.SalaryService;
+import test.erp_project.service.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/salary")
@@ -24,7 +26,7 @@ import test.erp_project.service.SalaryService;
 public class SalaryController {
 
     private final SalaryService salaryService;
-
+    private final UserService userService;
     @GetMapping("/manage")
     public String salaryManage(@PageableDefault(size = 10) Pageable pageable, Model model, HttpSession session) {
 
@@ -82,8 +84,21 @@ public class SalaryController {
             , Model model
             , HttpSession session) {
 
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         Page<UserSalaryDto> userSalaryDto = salaryService.getUserSalaryDto(pageable, user.getUserNum());
         model.addAttribute("userSalaryDto", userSalaryDto);

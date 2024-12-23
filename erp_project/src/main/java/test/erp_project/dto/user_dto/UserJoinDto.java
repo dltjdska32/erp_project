@@ -4,8 +4,16 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
+import org.springframework.web.multipart.MultipartFile;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
 public class UserJoinDto {
 
     @NotBlank(message = "아이디는 필수 정보입니다.")
@@ -26,43 +34,8 @@ public class UserJoinDto {
     @NotEmpty(message = "이메일은 필수 정보입니다.")
     private String email;
 
-    public String getUserId() {
-        return userId;
-    }
+    private MultipartFile idPhoto;
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTel() {
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

@@ -29,9 +29,7 @@ public class GptService {
 
     public SummarizeOrTranslateRespDto summarizeGpt(String text) {
 
-
         List<Message> massages = new ArrayList<>();
-
 
         Message systemMessage = Message.builder()
                 .role("system")

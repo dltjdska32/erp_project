@@ -302,6 +302,12 @@
             }
         }
 
+        .user-image .user-photo {
+            width: 300px;
+            height: 100px;
+            border-radius: 50%;   /* 원형으로 만들기 위해 반지름을 50%로 설정 */
+            object-fit: cover;    /* 이미지 비율 유지하며 영역에 맞게 잘리도록 설정 */
+        }
 
     </style>
 </head>
@@ -314,7 +320,9 @@
     <div class="sidebar" id="sidebar">
         <div class="user-profile">
             <div class="user-image">
-                <i class="bi bi-person"></i>
+                <i class="bi bi-person" th:unless="${userInfo.idPhotoName != null && !userInfo.idPhotoName.isEmpty()}"></i>
+                <img th:if="${userInfo.idPhotoName != null && !userInfo.idPhotoName.isEmpty()}"
+                     th:src="@{'/images/' + ${userInfo.idPhotoName}}" alt="User Photo" class="user-photo">
             </div>
             <div class="user-info">
 

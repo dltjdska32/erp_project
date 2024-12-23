@@ -14,11 +14,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import test.erp_project.config.SessionConst;
+import test.erp_project.dto.user_dto.UploadFile;
 import test.erp_project.dto.user_dto.UserInfo;
 import test.erp_project.dto.user_dto.UserJoinDto;
 import test.erp_project.dto.user_dto.UserSearchDto;
+import test.erp_project.file.FileStore;
 import test.erp_project.service.UserService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final FileStore fileStore;
 
     @GetMapping("/user/join")
     public String join(Model model) {
@@ -83,14 +87,20 @@ public class UserController {
 
     @PostMapping("/user/join")
     public String join(@Validated @ModelAttribute("UserJoinDto") UserJoinDto userJoinDto,
-                       BindingResult bindingResult) {
+                       BindingResult bindingResult) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "user/join"; // 오류가 있을 경우 다시 폼으로
         }
 
+
+        // 이미지 파일 경로에 저장
+        UploadFile uploadImage = fileStore.storeFIle(userJoinDto.getIdPhoto());
+
+
+
         // 정상 처리 로직
-        userService.saveUser(userJoinDto);
+        userService.saveUser(userJoinDto, uploadImage);
 
         return "redirect:/login-user";
     }

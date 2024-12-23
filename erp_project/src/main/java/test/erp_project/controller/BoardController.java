@@ -66,6 +66,7 @@ public class BoardController {
                 .tel(user.getTel())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
                 .build();
 
         model.addAttribute("userInfo", updatedUserInfo);
@@ -100,7 +101,23 @@ public class BoardController {
         Long boardNum = Long.valueOf(no);
 
         UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", userInfo);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         BoardDetailDto boardDetailDtoById = boardService.findBoardDetailDtoById(boardNum);
         model.addAttribute("boardDetailDto", boardDetailDtoById);
@@ -166,7 +183,23 @@ public class BoardController {
 
 
         UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", userInfo);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         return "user/board-create";
     }
@@ -192,7 +225,23 @@ public class BoardController {
                                   @PageableDefault(size = 10) Pageable pageable,
                                   @RequestParam("title") String titleOrName){
         UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", userInfo);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         Page<BoardInfoDto> boardInfoDtoByTitle = boardService.findBoardInfoDtoByTitleAndUserNum(pageable, titleOrName, userInfo.getUserNum());
         model.addAttribute("qnaList", boardInfoDtoByTitle);

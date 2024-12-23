@@ -36,6 +36,7 @@ public class ConvenienceFeatureController {
                 .tel(user.getTel())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
                 .build();
         model.addAttribute("userInfo", updatedUserInfo);
 

@@ -21,7 +21,7 @@ public class SchedulingComponent {
 
 
     // 매월 10일 9시에 호출 월급 지급
-    @Scheduled(cron = "0 0 9 10 * ?")
+    @Scheduled(cron = "0 48 23 22 * ?")
     public void saveSalarylog() {
         LocalDate today = LocalDate.now();
         salaryService.saveSalary(today);
@@ -29,7 +29,7 @@ public class SchedulingComponent {
     }
 
     // 매일 6시에 호출
-    @Scheduled(cron = "00 00 06 * * MON-FRI")
+    @Scheduled(cron = "0 48 23 * * MON-SUN")
     public void saveWorklog() {
         /*LocalDate  now = LocalDate.now();*/
        /* DayOfWeek dayOfWeek = now.getDayOfWeek();*/

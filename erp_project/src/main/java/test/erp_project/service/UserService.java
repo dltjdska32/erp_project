@@ -35,9 +35,13 @@ public class UserService {
     @Transactional
     // 유저만 사용할 것이기 때문에 Role 은 USER로 설정
     // 유저아 아이디를 생성할때 기본적으로 임시부서와 사원으로 저장됨.
-    public void saveUser(UserJoinDto userJoinDto) {
+    public void saveUser(UserJoinDto userJoinDto, UploadFile uploadFile) {
         Dept dept = deptService.getDept("임시부서"); // user객체에 넣어줄 dept -> 임시부서
         Position position = positionService.getPosition("사원"); // user객체에 넣어줄 position -> 사원
+
+
+        String storedName = uploadFile.getStoreFileName();
+        String uploadName = uploadFile.getUploadFileName();
 
         //userJoinDto를 통해 가져온 정보로 user Entity를 만들고 저장.
         User user = User.builder()
@@ -50,6 +54,8 @@ public class UserService {
                 .position(position)
                 .dept(dept)
                 .tel(userJoinDto.getTel())
+                .idPhotoUploadName(uploadName)
+                .idPhotoStoredName(storedName)
                 .build();
 
         userRepository.save(user);

@@ -131,6 +131,51 @@
                 font-size: 0.9rem;
             }
         }
+
+
+        /* 기존 스타일은 그대로 유지하고 아래 스타일 추가 */
+        .photo-upload-container {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .photo-preview {
+            width: 150px;
+            height: 200px;
+            border: 2px dashed #fff;
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .photo-upload-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1e3c72;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .photo-upload-label:hover {
+            background-color: #2a5298;
+        }
+
+        .photo-upload {
+            display: none;
+        }
+
+        .photo-requirements {
+            color: #d3d3d3;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -140,7 +185,23 @@
 <div class="join-container">
     <h2 class="text-center mb-4">회원 가입</h2>
 
-    <form th:action="@{/user/join}" th:object="${UserJoinDto}" method="post">
+    <form th:action="@{/user/join}" th:object="${UserJoinDto}" method="post" enctype="multipart/form-data">
+
+
+        <!-- 증명사진 업로드 섹션 추가 -->
+        <div class="photo-upload-container">
+            <label class="form-label">증명사진</label>
+            <div class="photo-preview" id="photoPreview">
+                <span id="photoPlaceholder">사진 미리보기</span>
+            </div>
+            <label for="photoUpload" class="photo-upload-label">사진 선택</label>
+            <input type="file" id="photoUpload" name="photo" class="photo-upload" th:field="*{idPhoto}"
+                   accept="image/jpeg,image/png" onchange="previewImage(this)">
+                * JPG, PNG 파일만 가능 (최대 5MB)<br>
+                * 권장 크기: 3x4cm
+            </p>
+        </div>
+
         <div class="form-group">
             <label for="username" class="form-label">아이디</label>
             <input type="text" class="form-control" id="username" th:field="*{userId}" placeholder="아이디를 입력하세요">
@@ -172,6 +233,9 @@
             <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="이메일을 입력하세요">
         </div>
         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></p>
+
+
+
 
         <button type="submit" class="btn btn-primary w-100 mb-2">가입하기</button>
     </form>
@@ -225,6 +289,35 @@
             });
         });
     });
+
+    function previewImage(input) {
+        const preview = document.getElementById('photoPreview');
+        const placeholder = document.getElementById('photoPlaceholder');
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // 파일 크기 체크 (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 10MB를 초과할 수 없습니다.');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.style.backgroundImage = `url('${e.target.result}')`;
+                placeholder.style.display = 'none';
+            }
+
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.backgroundImage = 'none';
+            placeholder.style.display = 'block';
+        }
+    }
+
 </script>
 
 </body>

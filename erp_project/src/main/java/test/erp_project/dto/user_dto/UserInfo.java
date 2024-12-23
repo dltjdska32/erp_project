@@ -24,6 +24,7 @@ public class UserInfo {
 
     private Role role;
 
+    private String idPhotoName;
 
 }
 

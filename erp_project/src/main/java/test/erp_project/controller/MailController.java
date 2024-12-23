@@ -12,11 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import test.erp_project.config.SessionConst;
 import test.erp_project.domain.user.Role;
+import test.erp_project.domain.user.User;
 import test.erp_project.dto.mail_dto.MailDetialDto;
 import test.erp_project.dto.mail_dto.ReceivedMailDto;
 import test.erp_project.dto.mail_dto.SendMailDto;
 import test.erp_project.dto.user_dto.UserInfo;
 import test.erp_project.service.MailService;
+import test.erp_project.service.UserService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,17 +30,33 @@ import java.util.Map;
 @RequestMapping("/mail")
 public class MailController {
     private final MailService mailService;
-
+    private final UserService userService;
     @GetMapping("/received")
     public String receivedMail(@PageableDefault(size = 10) Pageable pageable, HttpSession session, Model model) {
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
 
 
-        Page<ReceivedMailDto> receivedMails = mailService.getReceivedMails(pageable, user.getUserNum());
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
+
+
+        Page<ReceivedMailDto> receivedMails = mailService.getReceivedMails(pageable, userInfo.getUserNum());
         model.addAttribute("receivedMails", receivedMails);
 
-        if(user.getRole() == Role.ADMIN) {
+        if(userInfo.getRole() == Role.ADMIN) {
             return "admin/mail";
         }
         return "user/mail";
@@ -47,8 +65,24 @@ public class MailController {
 
     @GetMapping("/received/search")
     public String receivedMail(@RequestParam("title") String title,@PageableDefault(size=10) Pageable pageable, HttpSession session, Model model) {
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
 
         Page<ReceivedMailDto> receivedMails = mailService.getReceivedMailsByTitle(pageable, user.getUserNum(), title);
@@ -63,8 +97,24 @@ public class MailController {
     //mailform 반환
     @GetMapping("/send")
     public String sendMail( HttpSession session, Model model) {
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         if(user.getRole() == Role.ADMIN) {
             return "admin/send-mail";
@@ -128,8 +178,24 @@ public class MailController {
         Long receivedMailNum = Long.valueOf(no);
 
 
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         MailDetialDto mail = mailService.findMail(receivedMailNum);
         model.addAttribute("mail", mail);
@@ -147,8 +213,24 @@ public class MailController {
         // sendMailNum을 받아온다.
         Long sendMailNum = Long.valueOf(no);
         //사용자 (보낸사람)의 유저 정보를 가져온다.
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         MailDetialDto mail = mailService.findSendMailDetail(sendMailNum);
         model.addAttribute("mail", mail);
@@ -165,8 +247,24 @@ public class MailController {
     public String sendMails(@PageableDefault(size=10) Pageable pageable,
                             HttpSession session,
                             Model model) {
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
         Page<SendMailDto> sendMails = mailService.findSendMails(pageable, user.getUserNum());
         model.addAttribute("sendMails", sendMails);
@@ -185,8 +283,24 @@ public class MailController {
                                   @RequestParam("title") String title){
 
 
-        UserInfo user = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
-        model.addAttribute("userInfo", user);
+        UserInfo userInfo = (UserInfo) session.getAttribute(SessionConst.LOGIN_USER);
+
+
+
+        User user = userService.findUserByUserNum(userInfo.getUserNum());
+        UserInfo updatedUserInfo = UserInfo.builder()
+                .userNum(user.getUserNum())
+                .positionName(user.getPosition().getPositionName())
+                .deptName(user.getDept().getDeptName())
+                .name(user.getName())
+                .tel(user.getTel())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
+                .build();
+
+
+        model.addAttribute("userInfo", updatedUserInfo);
 
 
         Page<SendMailDto> receivedMails = mailService.getSendMailsByTitle(pageable, user.getUserNum(), title);

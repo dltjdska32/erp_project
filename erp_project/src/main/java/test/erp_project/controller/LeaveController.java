@@ -114,6 +114,7 @@ public class LeaveController {
                 .tel(user.getTel())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .idPhotoName(user.getIdPhotoStoredName())
                 .build();
         model.addAttribute("userInfo", updatedUserInfo);
 
