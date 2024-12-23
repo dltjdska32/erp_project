@@ -5,6 +5,7 @@ import lombok.*;
 import test.erp_project.domain.user.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -26,9 +27,12 @@ public class SalaryLog {
     @Column(name = "total_salary")
     private int totalSalary;
 
+    private int totalBonus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;
+
+
 
 }

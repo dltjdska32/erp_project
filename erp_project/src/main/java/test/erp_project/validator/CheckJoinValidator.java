@@ -19,7 +19,7 @@ public class CheckJoinValidator extends AbstractValidator<UserJoinDto> {
     @Override
     protected void doValidate(UserJoinDto dto, Errors errors) {
 
-        //유저 아이디가 중복됐다면 실행01.
+
 
         // userid가 입력되지않으면 추가
         if(!StringUtils.hasText(dto.getUserId())){

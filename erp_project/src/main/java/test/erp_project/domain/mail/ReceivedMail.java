@@ -19,14 +19,16 @@ public class ReceivedMail {
 
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")
     private User user;
 
 
-    @ManyToOne
-    @JoinColumn(name = "mai_num")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mail_num")
     private Mail mail;
+
+    private boolean isDeleted = false;
 
 }
 

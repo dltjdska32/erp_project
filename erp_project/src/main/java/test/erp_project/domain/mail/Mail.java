@@ -28,17 +28,12 @@ public class Mail {
     @Column(name = "created_date")
     private LocalDate createdDate;
 
-    private Long mailStoreNum;
+
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
 
-    @ManyToOne
-    @JoinColumn(name = "mail_store_num")
-    private MailStore mailStore;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mail")
-    private List<ReceivedMail> receivedMailList = new ArrayList<>();
 
 }

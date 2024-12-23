@@ -1,23 +1,20 @@
 package test.erp_project.dto.salary_dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserSalaryDto {
 
-    Long userNum;
-    int userSalary;
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    public void setUserNum(Long userNum) {
-        this.userNum = userNum;
-    }
-
-    public int getUserSalary() {
-        return userSalary;
-    }
-
-    public void setUserSalary(int userSalary) {
-        this.userSalary = userSalary;
-    }
+    private LocalDate receivedDate;
+    private int salary;
+    private int bonus;
+    private int totalSalary;
 }

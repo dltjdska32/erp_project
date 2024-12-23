@@ -1,5 +1,13 @@
 package test.erp_project.dto.user_dto;
 
+import lombok.*;
+import test.erp_project.domain.user.Role;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserInfo {
 
     private Long userNum;
@@ -14,53 +22,9 @@ public class UserInfo {
 
     private String positionName;
 
-    public String getTel() {
-        return tel;
-    }
+    private Role role;
 
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    public Long getUserNum() {
-        return userNum;
-    }
-
-    public void setUserNum(Long userNum) {
-        this.userNum = userNum;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDeptName() {
-        return deptName;
-    }
-
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
-
-    public String getPositionName() {
-        return positionName;
-    }
-
-    public void setPositionName(String positionName) {
-        this.positionName = positionName;
-    }
+    private String idPhotoName;
 
 }
 
